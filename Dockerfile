@@ -1,8 +1,11 @@
-FROM alpine:latest
+FROM alpine:3.15
 
-RUN echo "http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-  && apk add --update-cache s6-overlay wireguard-tools dante-server openresolv \
-  && rm -rf /var/cache/apk/*
+ENV S6_OVERLAY_RELEASE=https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-overlay-amd64.tar.gz
+RUN wget "${S6_OVERLAY_RELEASE}" -O /tmp/s6overlay.tar.gz \
+    && tar xzf /tmp/s6overlay.tar.gz -C / \
+    && rm /tmp/s6overlay.tar.gz
+
+RUN apk add --update --no-cache wireguard-tools dante-server
 
 COPY /root/ /
 
